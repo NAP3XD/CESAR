@@ -1,0 +1,31 @@
+def update_mobile_status(response)
+  puts "Updating mobile status: #{response}"
+end
+
+def start_upgrade(force = false)
+  # Simulate checking for an already running process
+  running = `ps -axo command`.match('upgrade_start.rb')
+  return update_mobile_status('1208: Upgrade already running') if running
+
+  # Prepare the command arguments
+  args = %w(0 mobile)
+  args << "\"force\"" if force  # Add "force" argument if force is true
+
+  # Log the command for verification
+  command = "echo Running upgrade_start.rb #{args.join(' ')}"
+  puts "Executing command: #{command}"
+
+  # Execute the command
+  status = system(command)
+
+  # Check the result
+  if status
+    update_mobile_status('1205: Upgrade started successfully')
+  else
+    update_mobile_status('1501: Upgrade failed')
+  end
+end
+
+# Check if "force" was provided as a command-line argument
+force_param = ARGV.include?("force")
+start_upgrade(force_param)
