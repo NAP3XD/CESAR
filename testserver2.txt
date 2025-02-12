@@ -1,0 +1,20 @@
+import asyncio
+import openleadr
+
+# Create the VTN Server
+vtn_server = openleadr.OpenADRServer(vtn_id="MyVTN", http_port=8080)
+
+# Add a VEN Registration Handler
+@vtn_server.add_handler("on_create_party_registration")
+async def on_create_party_registration(registration_info):
+    print(f"Received registration request from {registration_info['ven_name']}")
+    return {
+        "ven_id": registration_info["ven_name"],
+        "registration_id": "reg-123",
+        "response_code": 200,
+        "response_description": "OK",
+    }
+
+# Run the VTN server properly with asyncio
+if __name__ == "__main__":
+    asyncio.run(vtn_server.run())
