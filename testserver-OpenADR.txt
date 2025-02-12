@@ -1,0 +1,39 @@
+import openleadr
+
+# Create the VTN Server
+vtn_server = openleadr.OpenADRServer(vtn_id="MyVTN", http_port=8080)
+
+# Add a VEN Registration Handler
+@vtn_server.add_handler("on_create_party_registration")
+async def on_create_party_registration(registration_info):
+    """
+    Handles VEN registration requests.
+    """
+    print(f"Received registration request from {registration_info['ven_name']}")
+    return {
+        "ven_id": registration_info["ven_name"],  # Assign VEN ID
+        "registration_id": "reg-123",  # A unique registration ID
+        "response_code": 200,
+        "response_description": "OK",
+    }
+
+# Add a Report Handler (Handles Telemetry Data from VENs)
+@vtn_server.add_handler("on_register_report")
+async def on_register_report(ven_id, resource_id, measurement, unit, scale, min_sampling_interval, max_sampling_interval):
+    """
+    Handles reports from VENs.
+    """
+    print(f"Received report registration from {ven_id} for {measurement} {unit}")
+    return "report-123"  # Return a report ID
+
+# Add an Event Handler (Sends Demand Response Events to VENs)
+@vtn_server.add_handler("on_event")
+async def on_event(ven_id, event_id, event_status):
+    """
+    Handles event status updates from VENs.
+    """
+    print(f"Event {event_id} has status {event_status} for VEN {ven_id}")
+
+# Run the VTN server
+if __name__ == "__main__":
+    vtn_server.run()
